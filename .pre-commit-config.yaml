@@ -16,6 +16,7 @@ repos:
         args:
           - --max-line-length=100
           - --ignore=E131,E126,E402
+        exclude: /migrations/
   - repo: https://github.com/PyCQA/isort
     rev: 5.11.5
     hooks:
