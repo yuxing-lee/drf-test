@@ -1,14 +1,20 @@
-from rest_framework import viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
 
-from .models import Translate
-from .serializers import TranslateSerializer
+from .models import Query
+from .serializers import QuerySerializer
+from .utils import translate_text
 
 
-class TranslateViewSet(viewsets.GenericViewSet):
-    queryset = Translate.objects.all()
-    serializer_class = TranslateSerializer
+class TranslateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Query.objects.all()
+    serializer_class = QuerySerializer
 
-    def list(self, request):
-        translate_query = self.get_queryset()
-        return Response(self.get_serializer(translate_query, many=True).data)
+    def create(self, request):
+        translate_result = translate_text(request.data["source_text"],
+                                          request.data["target_language"])
+        serializer = self.serializer_class(data=translate_result)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
