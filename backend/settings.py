@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'users',
     'translate',
     'oauth2_provider',
+    'drf_yasg2',
 ]
 
 MIDDLEWARE = [
