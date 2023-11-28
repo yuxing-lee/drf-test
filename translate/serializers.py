@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Query
+from .models import Query, Translate
 
 
 class QuerySerializer(serializers.ModelSerializer):
@@ -9,4 +9,11 @@ class QuerySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Query
+        fields = '__all__'
+
+
+class TranslateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Translate
         fields = '__all__'

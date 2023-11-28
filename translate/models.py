@@ -11,5 +11,5 @@ class Query(models.Model):
 
 class Translate(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    query_id = models.OneToOneField(Query, on_delete=models.CASCADE)
+    query_id = models.ForeignKey(Query, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
