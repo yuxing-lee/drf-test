@@ -2,14 +2,15 @@ from django.contrib.auth import get_user_model
 from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
 
-from .models import Query
+from .filters import TranslateFilter
+from .models import Query, Translate
 from .serializers import QuerySerializer, TranslateSerializer
 from .services import GoogleTranslateService
 
 User = get_user_model()
 
 
-class TranslateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class QueryViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Query.objects.all()
     serializer_class = QuerySerializer
 
@@ -38,3 +39,9 @@ class TranslateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         translate_log.is_valid(raise_exception=True)
         translate_log.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class TranslateViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Translate.objects.all()
+    serializer_class = TranslateSerializer
+    filterset_class = TranslateFilter

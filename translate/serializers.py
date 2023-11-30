@@ -13,6 +13,10 @@ class QuerySerializer(serializers.ModelSerializer):
 
 
 class TranslateSerializer(serializers.ModelSerializer):
+    query_count = serializers.SerializerMethodField()
+
+    def get_query_count(self, obj):
+        return Translate.objects.filter(user=obj.user, query_id=obj.query_id.id).count()
 
     class Meta:
         model = Translate

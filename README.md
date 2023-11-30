@@ -12,10 +12,10 @@
 - [ ] Function
     - [ ] Login
     - [ ] Task Queue
-    - [ ] Translate
-        - [ ] Query
-        - [ ] History by date
-        - [ ] History by user
+    - [x] Translate
+        - [x] Query
+        - [x] History by date
+        - [x] History by user
 - [ ] Performance
     - [ ] Redis
 - [ ] Deploy
