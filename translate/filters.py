@@ -5,10 +5,9 @@ from .models import Translate
 
 
 class TranslateFilter(filters.FilterSet):
-    user = django_filters.CharFilter(field_name="user__username")
     query_date_gte = django_filters.DateFilter(field_name="created_at", lookup_expr='gte')
     query_date_lte = django_filters.DateFilter(field_name="created_at", lookup_expr='lte')
 
     class Meta:
         model = Translate
-        fields = ['user', 'query_id', 'query_date_gte', 'query_date_lte']
+        fields = ['query_id', 'query_date_gte', 'query_date_lte']

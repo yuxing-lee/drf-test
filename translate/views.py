@@ -45,3 +45,6 @@ class TranslateViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Translate.objects.all()
     serializer_class = TranslateSerializer
     filterset_class = TranslateFilter
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
