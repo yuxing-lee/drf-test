@@ -1,3 +1,6 @@
+import os
+
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path, re_path
 from drf_yasg2 import openapi
@@ -21,7 +24,8 @@ urlpatterns = [
             name='schema-json'),
     path('doc/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-    # apps
-    path("", include("users.urls")),
-    path('', include('translate.urls')),
 ]
+
+# import all apps
+for app in os.listdir(os.path.join(settings.BASE_DIR, 'apps')):
+    urlpatterns.append(path('', include(f"apps.{app}.urls")))
