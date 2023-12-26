@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from drf_yasg2 import openapi
@@ -24,4 +26,7 @@ urlpatterns = [
     # apps
     path("", include("users.urls")),
     path('', include('translate.urls')),
+    path('', include('imagep.urls')),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
