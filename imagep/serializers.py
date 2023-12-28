@@ -9,3 +9,16 @@ class ImageInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImageInfo
         fields = ['id', 'image_url', 'create_at']
+
+
+class ImageProcessSerializer(serializers.Serializer):
+    image_url = serializers.CharField(allow_blank=True, allow_null=True)
+    layer = serializers.IntegerField()
+    index = serializers.IntegerField()
+    function = serializers.CharField()
+    params = serializers.CharField()
+    changed = serializers.BooleanField()
+    child = serializers.ListField(child=serializers.JSONField(), allow_empty=True, required=False)
+
+    def to_representation(self, instance):
+        return super(ImageProcessSerializer, self).to_representation(instance)
