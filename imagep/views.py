@@ -1,4 +1,3 @@
-from django.views.generic import TemplateView
 from rest_framework import mixins, status, viewsets
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
@@ -23,7 +22,3 @@ class ImageProcessViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class ImageView(TemplateView):
-    template_name = "index.html"

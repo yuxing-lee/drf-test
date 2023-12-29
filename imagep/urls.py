@@ -1,7 +1,8 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import ImageInfoViewSet, ImageProcessViewSet, ImageView
+from .renderers import ImageView
+from .views import ImageInfoViewSet, ImageProcessViewSet
 
 router = DefaultRouter()
 router.register(r'api/image-management', ImageInfoViewSet)
