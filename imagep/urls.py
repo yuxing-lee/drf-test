@@ -9,6 +9,6 @@ router.register(r'api/image-management', ImageInfoViewSet)
 router.register(r'api/image-process', ImageProcessViewSet, basename="image-process")
 
 urlpatterns = [
-    path("image/", ImageView.as_view()),
+    path(r'', ImageView.as_view()),
     path(r'', include(router.urls)),
 ]

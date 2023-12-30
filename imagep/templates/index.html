@@ -4,7 +4,46 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Image Process</title>
+        <style>
+            img {
+                height: 10rem;
+            }
+            .image-container {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-evenly;
+            }
+        </style>
     </head>
 
-    <body></body>
+    <body>
+        {% load static %}
+        <form id="upload-image">
+            {% csrf_token %}
+            <input type="file" name="image_url" />
+            <button type="submit">Upload</button>
+        </form>
+        <div class="image-container">
+            <img id="origin-image" alt="image" />
+            <img id="origin-image2" alt="image" />
+        </div>
+    </body>
+
+    <script>
+        let uploadImage = async (event) => {
+            event.preventDefault();
+            const form_data = new FormData(event.target);
+            let response = await fetch("api/image-management/", {
+                method: "POST",
+                body: form_data,
+            });
+            let data = await response.json();
+            document.getElementById("origin-image").src = data["image_url"];
+        };
+
+        document
+            .getElementById("upload-image")
+            .addEventListener("submit", uploadImage);
+    </script>
 </html>
