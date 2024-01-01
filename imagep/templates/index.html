@@ -24,13 +24,20 @@
             <input type="file" name="image_url" />
             <button type="submit">Upload</button>
         </form>
-        <div class="image-container">
-            <img id="origin-image" alt="image" />
-            <img id="origin-image2" alt="image" />
-        </div>
+        <div id="image-container" class="image-container"></div>
     </body>
 
     <script>
+        let root = {
+            image_url: "",
+            layer: 0,
+            index: 0,
+            function: "",
+            params: {},
+            changed: true,
+            child: []
+        };
+
         let uploadImage = async (event) => {
             event.preventDefault();
             const form_data = new FormData(event.target);
@@ -39,7 +46,59 @@
                 body: form_data,
             });
             let data = await response.json();
-            document.getElementById("origin-image").src = data["image_url"];
+            /* Append to container */
+            let image_container = document.getElementById("image-container");
+            let image = await generateImage("origin-image", data["image_url"]);
+            image_container.appendChild(image);
+        };
+
+        let generateImage = async (image_name, image_url) => {
+            let div = document.createElement("div");
+            div.className = "image";
+            let img = document.createElement("img");
+            img.id = image_name;
+            img.alt = image_name;
+            img.src = image_url;
+            let button = document.createElement("button");
+            button.name = "0-0"
+            button.innerText = "新增";
+            button.addEventListener("click", generateParams);
+            div.appendChild(img);
+            div.appendChild(generateFunctionSelector(0, 0));
+            div.appendChild(button);
+            return div;
+        };
+
+        let generateFunctionSelector = (layer, index) => {
+            let select = document.createElement("select");
+            select.id = `function-${layer}-${index}`;
+            select.appendChild(generateFunctionOption("灰階", "gray"));
+            select.appendChild(generateFunctionOption("二值化", "binary"));
+            select.appendChild(generateFunctionOption("反向", "reverse"));
+            return select;
+        };
+
+        let generateFunctionOption = (text, value) => {
+            let option = document.createElement("option");
+            option.text = text;
+            option.value = value;
+            return option;
+        };
+
+        let generateParams = (event) => {
+            let name = event.target.name.split("-");
+            let layer = parseInt(name[0]);
+            let index = parseInt(name[1]);
+            let function_name = document.getElementById(`function-${layer}-${index}`).value;
+            let data = {
+                image_url: "",
+                layer: layer,
+                index: index,
+                function: function_name,
+                params: {},
+                changed: true,
+                child: []
+            };
         };
 
         document
