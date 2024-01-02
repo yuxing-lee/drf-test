@@ -28,15 +28,8 @@
     </body>
 
     <script>
-        let root = {
-            image_url: "",
-            layer: 0,
-            index: 0,
-            function: "",
-            params: {},
-            changed: true,
-            child: []
-        };
+        let root = {};
+        let counter = 1;
 
         let uploadImage = async (event) => {
             event.preventDefault();
@@ -48,11 +41,56 @@
             let data = await response.json();
             /* Append to container */
             let image_container = document.getElementById("image-container");
-            let image = await generateImage("origin-image", data["image_url"]);
+            let image = await generateImage(0, "origin-image", data["image_url"]);
             image_container.appendChild(image);
+            root = {
+                id: 0,
+                image_url: data["image_url"],
+                function: "",
+                params: {},
+                changed: false,
+                child: []
+            }
         };
 
-        let generateImage = async (image_name, image_url) => {
+        let addImageChild = async (event) => {
+            let parent_id = parseInt(event.target.name.split("-")[1]);
+            // generate node data
+            let data = {
+                id: counter,
+                image_url: "",
+                function: document.getElementById(`function-${parent_id}`).value,
+                params: {},
+                changed: true,
+                child: []
+            }
+            let node = await findImageChild(root, parent_id);
+            node["child"].push(data);
+            // Append to container
+            let image_container = document.getElementById("image-container");
+            let image = await generateImage(counter, "name", "url");
+            image_container.appendChild(image);
+            counter++;
+        };
+
+        let findImageChild = async (node, parent_id) => {
+            if (node["id"] == parent_id) {
+                return node;
+            } else if (node["child"].length == 0) {
+                return null;
+            }
+            for (let child of node["child"]) {
+                if (child["id"] == parent_id) {
+                    return child;
+                }
+                let result = await findImageChild(child, parent_id);
+                if (result) {
+                    return result;
+                }
+            }
+        };
+
+        let generateImage = async (id, image_name, image_url) => {
             let div = document.createElement("div");
             div.className = "image";
             let img = document.createElement("img");
@@ -60,18 +98,18 @@
             img.alt = image_name;
             img.src = image_url;
             let button = document.createElement("button");
-            button.name = "0-0"
+            button.name = `btn-${id}`
             button.innerText = "新增";
-            button.addEventListener("click", generateParams);
+            button.addEventListener("click", addImageChild);
             div.appendChild(img);
-            div.appendChild(generateFunctionSelector(0, 0));
+            div.appendChild(generateFunctionSelector(id));
             div.appendChild(button);
             return div;
         };
 
-        let generateFunctionSelector = (layer, index) => {
+        let generateFunctionSelector = (id) => {
             let select = document.createElement("select");
-            select.id = `function-${layer}-${index}`;
+            select.id = `function-${id}`;
             select.appendChild(generateFunctionOption("灰階", "gray"));
             select.appendChild(generateFunctionOption("二值化", "binary"));
             select.appendChild(generateFunctionOption("反向", "reverse"));
@@ -83,22 +121,6 @@
             option.text = text;
             option.value = value;
             return option;
-        };
-
-        let generateParams = (event) => {
-            let name = event.target.name.split("-");
-            let layer = parseInt(name[0]);
-            let index = parseInt(name[1]);
-            let function_name = document.getElementById(`function-${layer}-${index}`).value;
-            let data = {
-                image_url: "",
-                layer: layer,
-                index: index,
-                function: function_name,
-                params: {},
-                changed: true,
-                child: []
-            };
         };
 
         document
