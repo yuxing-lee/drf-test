@@ -10,6 +10,12 @@
             }
             .image-container {
                 display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-evenly;
+            }
+            .image-layer {
+                display: flex;
                 flex-direction: row;
                 align-items: center;
                 justify-content: space-evenly;
@@ -21,7 +27,7 @@
         {% load static %}
         <form id="upload-image">
             {% csrf_token %}
-            <input type="file" name="image_url" />
+            <input id="image-input" type="file" name="image_url" />
             <button type="submit">Upload</button>
         </form>
         <div id="image-container" class="image-container"></div>
@@ -34,6 +40,9 @@
         let uploadImage = async (event) => {
             event.preventDefault();
             const form_data = new FormData(event.target);
+            if (document.getElementById("image-input").files.length == 0) {
+                return;
+            }
             let response = await fetch("api/image-management/", {
                 method: "POST",
                 body: form_data,
@@ -41,7 +50,8 @@
             let data = await response.json();
             /* Append to container */
             let image_container = document.getElementById("image-container");
-            let image = await generateImage(0, "origin-image", data["image_url"]);
+            image_container.innerHTML = "";
+            let image = await generateImage(0, 0, "origin-image", data["image_url"]);
             image_container.appendChild(image);
             root = {
                 id: 0,
@@ -54,7 +64,9 @@
         };
 
         let addImageChild = async (event) => {
-            let parent_id = parseInt(event.target.name.split("-")[1]);
+            let name_list = event.target.name.split("-")
+            let parent_id = parseInt(name_list[1]);
+            let layer = parseInt(name_list[2]);
             // generate node data
             let data = {
                 id: counter,
@@ -67,11 +79,27 @@
             let node = await findImageChild(root, parent_id);
             node["child"].push(data);
             // Append to container
+            let image = await generateImage(counter, layer, "name", "url");
+            // if layer not exist, create new layer
             let image_container = document.getElementById("image-container");
-            let image = await generateImage(counter, "name", "url");
-            image_container.appendChild(image);
+            let layer_id = `image-layer-${layer + 1}`;
+            let image_layer = document.getElementById(layer_id);
+            if (!image_layer) {
+                let div = document.createElement("div");
+                div.id = layer_id;
+                div.className = "image-layer";
+                image_container.appendChild(div);
+                image_layer = document.getElementById(layer_id);
+            }
+            image_layer.appendChild(image);
             counter++;
         };
+
+        let delImageChild = async (event) => {
+            let name_list = event.target.name.split("-");
+            let parent_id = parseInt(name_list[1]);
+            document.getElementById(`image-${parent_id}`).remove();
+        }
 
         let findImageChild = async (node, parent_id) => {
             if (node["id"] == parent_id) {
@@ -90,20 +118,26 @@
             }
         };
 
-        let generateImage = async (id, image_name, image_url) => {
+        let generateImage = async (id, layer, image_name, image_url) => {
             let div = document.createElement("div");
+            div.id = `image-${id}`;
             div.className = "image";
             let img = document.createElement("img");
             img.id = image_name;
             img.alt = image_name;
             img.src = image_url;
-            let button = document.createElement("button");
-            button.name = `btn-${id}`
-            button.innerText = "新增";
-            button.addEventListener("click", addImageChild);
+            let add_button = document.createElement("button");
+            add_button.name = `abtn-${id}-${layer + 1}`
+            add_button.innerText = "新增";
+            add_button.addEventListener("click", addImageChild);
+            let delete_button = document.createElement("button");
+            delete_button.name = `dbtn-${id}-${layer + 1}`
+            delete_button.innerText = "刪除";
+            delete_button.addEventListener("click", delImageChild);
             div.appendChild(img);
             div.appendChild(generateFunctionSelector(id));
-            div.appendChild(button);
+            div.appendChild(add_button);
+            div.appendChild(delete_button);
             return div;
         };
 
