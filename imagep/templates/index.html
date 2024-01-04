@@ -7,6 +7,7 @@
         <style>
             img {
                 height: 10rem;
+                cursor: pointer;
             }
             .image-container {
                 display: flex;
@@ -20,6 +21,19 @@
                 align-items: center;
                 justify-content: space-evenly;
             }
+            .param-container {
+                right: 0;
+                bottom: 0;
+                background-color: #087fff;
+                color: #ffffff;
+                padding: 1rem;
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-evenly;
+                display: none;
+            }
         </style>
     </head>
 
@@ -31,11 +45,13 @@
             <button type="submit">Upload</button>
         </form>
         <div id="image-container" class="image-container"></div>
+        <div id="param-container" class="param-container"></div>
     </body>
 
     <script>
         let root = {};
         let counter = 1;
+        let current_id = -1;
 
         let uploadImage = async (event) => {
             event.preventDefault();
@@ -59,12 +75,12 @@
                 function: "",
                 params: {},
                 changed: false,
-                child: []
-            }
+                child: [],
+            };
         };
 
         let addImageChild = async (event) => {
-            let name_list = event.target.name.split("-")
+            let name_list = event.target.name.split("-");
             let parent_id = parseInt(name_list[1]);
             let layer = parseInt(name_list[2]);
             // generate node data
@@ -74,8 +90,8 @@
                 function: document.getElementById(`function-${parent_id}`).value,
                 params: {},
                 changed: true,
-                child: []
-            }
+                child: [],
+            };
             let node = await findImageChild(root, parent_id);
             node["child"].push(data);
             // Append to container
@@ -99,7 +115,22 @@
             let name_list = event.target.name.split("-");
             let parent_id = parseInt(name_list[1]);
             document.getElementById(`image-${parent_id}`).remove();
-        }
+        };
+
+        let editParams = async (event) => {
+            let name_list = event.target.id.split("-");
+            let id = parseInt(name_list[1]);
+            let param_container = document.getElementById("param-container");
+            if (current_id == id) {
+                current_id = -1;
+                param_container.style.display = "none";
+                return;
+            } else {
+                current_id = id;
+                param_container.style.display = "initial";
+            }
+            let node = await findImageChild(root, id);
+        };
 
         let findImageChild = async (node, parent_id) => {
             if (node["id"] == parent_id) {
@@ -120,18 +151,19 @@
 
         let generateImage = async (id, layer, image_name, image_url) => {
             let div = document.createElement("div");
-            div.id = `image-${id}`;
+            div.id = `div-${id}`;
             div.className = "image";
             let img = document.createElement("img");
-            img.id = image_name;
+            img.id = `image-${id}`;
             img.alt = image_name;
             img.src = image_url;
+            img.addEventListener("click", editParams);
             let add_button = document.createElement("button");
-            add_button.name = `abtn-${id}-${layer + 1}`
+            add_button.name = `abtn-${id}-${layer + 1}`;
             add_button.innerText = "新增";
             add_button.addEventListener("click", addImageChild);
             let delete_button = document.createElement("button");
-            delete_button.name = `dbtn-${id}-${layer + 1}`
+            delete_button.name = `dbtn-${id}-${layer + 1}`;
             delete_button.innerText = "刪除";
             delete_button.addEventListener("click", delImageChild);
             div.appendChild(img);
