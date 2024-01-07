@@ -117,10 +117,15 @@
             document.getElementById(`image-${parent_id}`).remove();
         };
 
-        let editParams = async (event) => {
+        let editImageParams = async (event) => {
             let name_list = event.target.id.split("-");
             let id = parseInt(name_list[1]);
+            // generate node data
+            let node = await findImageChild(root, id);
+            let div_params = await generateParams(node)
+            // Append to container
             let param_container = document.getElementById("param-container");
+            param_container.innerHTML = "";
             if (current_id == id) {
                 current_id = -1;
                 param_container.style.display = "none";
@@ -129,7 +134,9 @@
                 current_id = id;
                 param_container.style.display = "initial";
             }
-            let node = await findImageChild(root, id);
+            if (node["id"] != 0) {
+                param_container.appendChild(div_params);
+            }
         };
 
         let findImageChild = async (node, parent_id) => {
@@ -157,7 +164,7 @@
             img.id = `image-${id}`;
             img.alt = image_name;
             img.src = image_url;
-            img.addEventListener("click", editParams);
+            img.addEventListener("click", editImageParams);
             let add_button = document.createElement("button");
             add_button.name = `abtn-${id}-${layer + 1}`;
             add_button.innerText = "新增";
@@ -167,18 +174,20 @@
             delete_button.innerText = "刪除";
             delete_button.addEventListener("click", delImageChild);
             div.appendChild(img);
-            div.appendChild(generateFunctionSelector(id));
+            div.appendChild(generateFunctionSelector(`function-${id}`));
             div.appendChild(add_button);
             div.appendChild(delete_button);
             return div;
         };
 
-        let generateFunctionSelector = (id) => {
+        let generateFunctionSelector = (id, value) => {
             let select = document.createElement("select");
-            select.id = `function-${id}`;
+            select.id = id;
+            select.appendChild(generateFunctionOption("請選擇功能", undefined));
             select.appendChild(generateFunctionOption("灰階", "gray"));
             select.appendChild(generateFunctionOption("二值化", "binary"));
             select.appendChild(generateFunctionOption("反向", "reverse"));
+            select.value = value;
             return select;
         };
 
@@ -187,6 +196,13 @@
             option.text = text;
             option.value = value;
             return option;
+        };
+
+        let generateParams = async (params) => {
+            let div = document.createElement("div");
+            div.id = `div-params-${params["id"]}`;
+            div.appendChild(generateFunctionSelector(`current-function-${params["id"]}`, params["function"]));
+            return div;
         };
 
         document
