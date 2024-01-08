@@ -13,9 +13,7 @@ class ImageInfoSerializer(serializers.ModelSerializer):
 
 class ImageProcessSerializer(serializers.Serializer):
     image_url = serializers.CharField(allow_blank=True, allow_null=True)
-    layer = serializers.IntegerField()
-    index = serializers.IntegerField()
-    function = serializers.CharField()
+    function = serializers.CharField(allow_blank=True)
     params = serializers.CharField()
     changed = serializers.BooleanField()
     child = serializers.ListField(child=serializers.JSONField(), allow_empty=True, required=False)

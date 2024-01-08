@@ -46,6 +46,10 @@
         </form>
         <div id="image-container" class="image-container"></div>
         <div id="param-container" class="param-container"></div>
+        <form id="image-process">
+            {% csrf_token %}
+            <button type="submit">Process</button>
+        </form>
     </body>
 
     <script>
@@ -184,7 +188,7 @@
             let select = document.createElement("select");
             select.id = id;
             select.appendChild(generateFunctionOption("請選擇功能", undefined));
-            select.appendChild(generateFunctionOption("灰階", "gray"));
+            select.appendChild(generateFunctionOption("灰階", "bgr2gray"));
             select.appendChild(generateFunctionOption("二值化", "binary"));
             select.appendChild(generateFunctionOption("反向", "reverse"));
             select.value = value;
@@ -205,8 +209,35 @@
             return div;
         };
 
+        let imageProcess = async (event) => {
+            event.preventDefault();
+            let data = await transferData(root);
+            let response = await fetch("api/image-process/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data)
+            });
+            let res = await response.json();
+            console.log(res);
+        };
+
+        let transferData = async (root) => {
+            let node = JSON.parse(JSON.stringify(root));
+            node["params"] = JSON.stringify(node["params"]);
+            for (let index in node["child"]) {
+                node["child"][index] = await transferData(node["child"][index]);
+            }
+            return node;
+        };
+
         document
             .getElementById("upload-image")
             .addEventListener("submit", uploadImage);
+
+        document
+            .getElementById("image-process")
+            .addEventListener("submit", imageProcess);
     </script>
 </html>
