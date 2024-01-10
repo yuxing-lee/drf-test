@@ -2,6 +2,7 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 
+from . import imagep
 from .models import ImageInfo
 from .serializers import ImageInfoSerializer, ImageProcessSerializer
 
@@ -21,4 +22,5 @@ class ImageProcessViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = imagep.imageProcess(None, serializer.data)
+        return Response(data, status=status.HTTP_200_OK)
