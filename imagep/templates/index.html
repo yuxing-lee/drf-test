@@ -211,31 +211,20 @@
 
         let imageProcess = async (event) => {
             event.preventDefault();
-            let data = await transferData(root);
             let response = await fetch("api/image-process/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(root)
             });
-            let res = await response.json();
-            root = syncImageProcessResult(res);
-            console.log(res);
-        };
-
-        let transferData = async (root) => {
-            let node = JSON.parse(JSON.stringify(root));
-            node["params"] = JSON.stringify(node["params"]);
-            for (let index in node["child"]) {
-                node["child"][index] = await transferData(node["child"][index]);
-            }
-            return node;
+            let data = await response.json();
+            root = await syncImageProcessResult(data);
+            console.log(root);
         };
 
         let syncImageProcessResult = async (root) => {
             let node = JSON.parse(JSON.stringify(root));
-            node["params"] = JSON.parse(node["params"]);
             for (let index in node["child"]) {
                 node["child"][index] = await syncImageProcessResult(node["child"][index]);
             }
