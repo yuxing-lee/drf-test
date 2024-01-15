@@ -28,11 +28,13 @@
                 color: #ffffff;
                 padding: 1rem;
                 position: absolute;
+                display: none;
+            }
+            .params {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: space-evenly;
-                display: none;
             }
         </style>
     </head>
@@ -88,11 +90,16 @@
             let parent_id = parseInt(name_list[1]);
             let layer = parseInt(name_list[2]);
             // generate node data
+            let function_name = document.getElementById(`function-${parent_id}`).value
+            let params = {};
+            if (function_name == "binary") {
+                params["threshold"] = 127;
+            }
             let data = {
                 id: counter,
                 image_url: "",
-                function: document.getElementById(`function-${parent_id}`).value,
-                params: {},
+                function: function_name,
+                params: params,
                 changed: true,
                 child: [],
             };
@@ -118,7 +125,7 @@
         let delImageChild = async (event) => {
             let name_list = event.target.name.split("-");
             let parent_id = parseInt(name_list[1]);
-            document.getElementById(`image-${parent_id}`).remove();
+            document.getElementById(`div-${parent_id}`).remove();
         };
 
         let editImageParams = async (event) => {
@@ -202,10 +209,25 @@
             return option;
         };
 
+        let generateRange = (id, value) => {
+            let input = document.createElement("input");
+            input.id = id;
+            input.type = "range";
+            input.min = 0;
+            input.max = 255;
+            input.value = value;
+            return input;
+        };
+
         let generateParams = async (params) => {
             let div = document.createElement("div");
             div.id = `div-params-${params["id"]}`;
+            div.className = "params";
             div.appendChild(generateFunctionSelector(`current-function-${params["id"]}`, params["function"]));
+            if (params["function"] == "binary") {
+                div.appendChild(generateRange(`threshold-${params["id"]}`, params["params"]["threshold"]));
+            }
+            div.addEventListener("change", paramOnChange);
             return div;
         };
 
@@ -234,6 +256,13 @@
                 image.src = node["image_url"];
             }
             return node;
+        };
+
+        let paramOnChange = async (event) => {
+            let name_list = event.target.id.split("-");
+            let parent_id = parseInt(name_list[name_list.length - 1]);
+            let node = await findImageChild(root, parent_id);
+            node["params"][name_list[0]] = parseInt(event.target.value);
         };
 
         document

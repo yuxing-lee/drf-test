@@ -2,7 +2,6 @@ import cv2
 
 
 def imageProcess(image_path, data):
-    print(image_path)
     if image_path:
         media_index = image_path.index("media/")
         image_path = image_path[media_index:]
@@ -23,3 +22,9 @@ def imageProcess(image_path, data):
 
 def bgr2gray(image, params):
     return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+
+def binary(image, params):
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    ret, binary_image = cv2.threshold(gray_image, params["threshold"], 255, cv2.THRESH_BINARY)
+    return binary_image
