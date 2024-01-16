@@ -199,6 +199,9 @@
             select.appendChild(generateFunctionOption("二值化", "binary"));
             select.appendChild(generateFunctionOption("反向", "reverse"));
             select.value = value;
+            if (value) {
+                select.disabled = true;
+            }
             return select;
         };
 
@@ -253,7 +256,7 @@
             // set image url
             if (node["id"]) {
                 let image = document.getElementById(`image-${node["id"]}`);
-                image.src = node["image_url"];
+                image.src = node["image_url"] + "?" + new Date().getTime();
             }
             return node;
         };
