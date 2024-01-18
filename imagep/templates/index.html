@@ -91,6 +91,9 @@
             let layer = parseInt(name_list[2]);
             // generate node data
             let function_name = document.getElementById(`function-${parent_id}`).value
+            if (!function_name) {
+                return;
+            }
             let params = {};
             if (function_name == "binary") {
                 params["threshold"] = 127;
@@ -191,10 +194,10 @@
             return div;
         };
 
-        let generateFunctionSelector = (id, value) => {
+        let generateFunctionSelector = (id, value="") => {
             let select = document.createElement("select");
             select.id = id;
-            select.appendChild(generateFunctionOption("請選擇功能", undefined));
+            select.appendChild(generateFunctionOption("請選擇功能", ""));
             select.appendChild(generateFunctionOption("灰階", "bgr2gray"));
             select.appendChild(generateFunctionOption("二值化", "binary"));
             select.appendChild(generateFunctionOption("反向", "reverse"));

@@ -28,3 +28,8 @@ def binary(image, params):
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     ret, binary_image = cv2.threshold(gray_image, params["threshold"], 255, cv2.THRESH_BINARY)
     return binary_image
+
+
+def reverse(image, params):
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return cv2.bitwise_not(gray_image)

@@ -1,3 +1,5 @@
+import os
+
 from rest_framework import mixins, status, viewsets
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
@@ -14,6 +16,15 @@ class ImageInfoViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
+        # delete old image
+        image_url = serializer.data["image_url"]
+        filename = image_url.split('/')[-1]
+        media_index = image_url.index("media/")
+        filename_index = image_url.index(filename)
+        image_path = image_url[media_index:filename_index]
+        for file in os.listdir(image_path):
+            if file != filename:
+                os.remove(image_path + file)
 
 
 class ImageProcessViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
