@@ -52,6 +52,7 @@
             {% csrf_token %}
             <button type="submit">Process</button>
         </form>
+        <button id="clear">Clear</button>
     </body>
 
     <script>
@@ -125,10 +126,10 @@
             counter++;
         };
 
-        let delImageChild = async (event) => {
+        let delImageChildEvent = async (event) => {
             let name_list = event.target.name.split("-");
             let parent_id = parseInt(name_list[1]);
-            document.getElementById(`div-${parent_id}`).remove();
+            await delImageChild(root, parent_id);
         };
 
         let editImageParams = async (event) => {
@@ -170,6 +171,32 @@
             }
         };
 
+        let delImageChild = async (node, delete_id) => {
+            let delete_index = -1;
+            for (let index in node["child"]) {
+                let child = node["child"][index];
+                // 找到要刪除的節點
+                if (child["id"] == delete_id) {
+                    delete_index = index;
+                    break;
+                }
+            }
+            // 若沒找到要刪除的節點則繼續往下找，直到找到為止
+            if (delete_index == -1) {
+                for (let child of node["child"]) {
+                    await delImageChild(child, delete_id);
+                }
+            } else {
+                // 刪除所有子節點
+                for (let child of node["child"][delete_index]["child"]) {
+                    await delImageChild(node["child"][delete_index], child["id"]);
+                }
+                // 刪除節點及畫面
+                node["child"].splice(delete_index, 1);
+                document.getElementById(`div-${delete_id}`).remove();
+            }
+        };
+
         let generateImage = async (id, layer, image_name, image_url) => {
             let div = document.createElement("div");
             div.id = `div-${id}`;
@@ -186,7 +213,7 @@
             let delete_button = document.createElement("button");
             delete_button.name = `dbtn-${id}-${layer + 1}`;
             delete_button.innerText = "刪除";
-            delete_button.addEventListener("click", delImageChild);
+            delete_button.addEventListener("click", delImageChildEvent);
             div.appendChild(img);
             div.appendChild(generateFunctionSelector(`function-${id}`));
             div.appendChild(add_button);
@@ -251,6 +278,17 @@
             console.log(root);
         };
 
+        let clearImageProcessResult = (event) => {
+            document.getElementById("image-container").innerHTML = "";
+            document.getElementById("param-container").innerHTML = "";
+            document.getElementById("param-container").style.display = "none";
+            document.getElementById("image-process").reset();
+            document.getElementById("upload-image").reset();
+            root = {};
+            counter = 1;
+            current_id = -1;
+        };
+
         let syncImageProcessResult = async (root) => {
             let node = JSON.parse(JSON.stringify(root));
             for (let index in node["child"]) {
@@ -278,5 +316,9 @@
         document
             .getElementById("image-process")
             .addEventListener("submit", imageProcess);
+
+        document
+            .getElementById("clear")
+            .addEventListener("click", clearImageProcessResult);
     </script>
 </html>
