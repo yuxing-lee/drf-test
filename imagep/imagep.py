@@ -33,3 +33,22 @@ def binary(image, params):
 def reverse(image, params):
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return cv2.bitwise_not(gray_image)
+
+
+def sobel(image, params):
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    x = cv2.Sobel(gray_image, cv2.CV_64F, 1, 0, ksize=params["ksize"])
+    y = cv2.Sobel(gray_image, cv2.CV_64F, 0, 1, ksize=params["ksize"])
+    absX = cv2.convertScaleAbs(x)
+    absY = cv2.convertScaleAbs(y)
+    return cv2.addWeighted(absX, 0.5, absY, 0.5, 0)
+
+
+def canny(image, params):
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return cv2.Canny(gray_image, params["threshold1"], params["threshold2"])
+
+
+def laplacian(image, params):
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return cv2.Laplacian(gray_image, cv2.CV_64F, ksize=params["ksize"])
