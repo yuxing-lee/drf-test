@@ -96,14 +96,14 @@
                 return;
             }
             let params = {};
-            if (function_name == "binary") {
+            if (function_name == "Binary") {
                 params["threshold"] = 127;
-            } else if (function_name == "sobel") {
+            } else if (function_name == "Sobel") {
                 params["ksize"] = 3;
-            } else if (function_name == "canny") {
+            } else if (function_name == "Canny") {
                 params["threshold1"] = 100;
                 params["threshold2"] = 200;
-            } else if (function_name == "laplacian") {
+            } else if (function_name == "Laplacian") {
                 params["ksize"] = 3;
             }
             let data = {
@@ -232,12 +232,12 @@
             let select = document.createElement("select");
             select.id = id;
             select.appendChild(generateFunctionOption("請選擇功能", ""));
-            select.appendChild(generateFunctionOption("灰階", "bgr2gray"));
-            select.appendChild(generateFunctionOption("二值化", "binary"));
-            select.appendChild(generateFunctionOption("反向", "reverse"));
-            select.appendChild(generateFunctionOption("Sobel", "sobel"));
-            select.appendChild(generateFunctionOption("Canny", "canny"));
-            select.appendChild(generateFunctionOption("Laplacian", "laplacian"));
+            select.appendChild(generateFunctionOption("灰階", "BGR2Gray"));
+            select.appendChild(generateFunctionOption("二值化", "Binary"));
+            select.appendChild(generateFunctionOption("反向", "Reverse"));
+            select.appendChild(generateFunctionOption("Sobel", "Sobel"));
+            select.appendChild(generateFunctionOption("Canny", "Canny"));
+            select.appendChild(generateFunctionOption("Laplacian", "Laplacian"));
             select.value = value;
             if (value) {
                 select.disabled = true;
@@ -268,14 +268,14 @@
             div.id = `div-params-${params["id"]}`;
             div.className = "params";
             div.appendChild(generateFunctionSelector(`current-function-${params["id"]}`, params["function"]));
-            if (params["function"] == "binary") {
+            if (params["function"] == "Binary") {
                 div.appendChild(generateRange(`threshold-${params["id"]}`, params["params"]["threshold"]));
-            } else if (params["function"] == "sobel") {
+            } else if (params["function"] == "Sobel") {
                 div.appendChild(generateRange(`ksize-${params["id"]}`, params["params"]["ksize"], 3, 11, 2));
-            } else if (params["function"] == "canny") {
+            } else if (params["function"] == "Canny") {
                 div.appendChild(generateRange(`threshold1-${params["id"]}`, params["params"]["threshold1"]));
                 div.appendChild(generateRange(`threshold2-${params["id"]}`, params["params"]["threshold2"]));
-            } else if (params["function"] == "laplacian") {
+            } else if (params["function"] == "Laplacian") {
                 div.appendChild(generateRange(`ksize-${params["id"]}`, params["params"]["ksize"], 3, 11, 2));
             }
             div.addEventListener("change", paramOnChange);
