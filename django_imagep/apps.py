@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ImagepConfig(AppConfig):
+class DjangoImagepConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'imagep'
+    name = 'django_imagep'

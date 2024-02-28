@@ -42,13 +42,13 @@ INSTALLED_APPS = [
     'rest_framework',
     "django_filters",
     'drf_yasg2',
-    'users',
-    'translate',
-    'imagep',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    'django_imagep',
+    # 'users',
+    # 'translate',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
