@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 
-from imagep.abstract import ImageProcess
+from imagep.abstract import ImageProcessing
 
 
-class CV2(ImageProcess):
+class OpenCV(ImageProcessing):
 
     required_params = []
     optional_params = []
@@ -43,6 +43,3 @@ class CV2(ImageProcess):
         if self.result is None:
             self.process()
         cv2.imwrite(path, self.result)
-
-    def process(self) -> None:
-        raise NotImplementedError

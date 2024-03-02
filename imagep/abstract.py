@@ -3,7 +3,7 @@ import abc
 import numpy as np
 
 
-class ImageProcess(abc.ABC):
+class ImageProcessing(abc.ABC):
 
     @abc.abstractmethod
     def loadImage(self, image: np.ndarray) -> None:

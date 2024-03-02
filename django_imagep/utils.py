@@ -1,13 +1,15 @@
 import importlib
 
+from django.conf import settings
+
+lib = importlib.import_module(settings.IMAGE_PROCESS_LIB)
+
 
 def imageProcess(image_path, data):
     if image_path:
         media_index = image_path.index("media/")
         image_path = image_path[media_index:]
     if data['function'] != "":
-        # image process
-        lib = importlib.import_module("imagep.cv2.process")
         module = getattr(lib, data['function'])()
         module.setParams(data['params'])
         module.loadImageFromPath(image_path)

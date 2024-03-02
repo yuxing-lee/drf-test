@@ -17,7 +17,8 @@
         - [x] History by date
         - [x] History by user
     - [ ] Image process
-        - [ ]
+        - [x] cv2
+        - [ ] scikit-image
 - [ ] Performance
     - [ ] Redis
 - [ ] Deploy
@@ -38,11 +39,17 @@ graph LR;
         Permissions-->Validators;
         Validators-->Serializers;
     end
+    View<-->Utils;
     Serializers<-->ORM;
     ORM<-->DB;
 ```
+# Image Process
 
-# GCP translate API
+## OO Design
+
+![image-process](./github/image-process.png)
+
+# GCP Translate API
 
 1. Login GCP
 2. Enable "Cloud Translation API"
