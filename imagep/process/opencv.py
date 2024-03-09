@@ -48,3 +48,56 @@ class Laplacian(OpenCV):
     def process(self) -> None:
         gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         self.result = cv2.Laplacian(gray_image, cv2.CV_64F, ksize=self.params["ksize"])
+
+
+class GaussianBlur(OpenCV):
+    required_params = ["ksize"]
+
+    def process(self) -> None:
+        self.result = cv2.GaussianBlur(self.image, (self.params["ksize"], self.params["ksize"]), 0)
+
+
+class MedianBlur(OpenCV):
+    required_params = ["ksize"]
+
+    def process(self) -> None:
+        self.result = cv2.medianBlur(self.image, self.params["ksize"])
+
+
+class BilateralFilter(OpenCV):
+    required_params = ["d", "sigmaColor", "sigmaSpace"]
+
+    def process(self) -> None:
+        self.result = cv2.bilateralFilter(self.image, self.params["d"], self.params["sigmaColor"], self.params["sigmaSpace"])
+
+
+class Erosion(OpenCV):
+    required_params = ["ksize", "iterations"]
+
+    def process(self) -> None:
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (self.params["ksize"], self.params["ksize"]))
+        self.result = cv2.erode(self.image, kernel, iterations=self.params["iterations"])
+
+
+class Dilation(OpenCV):
+    required_params = ["ksize", "iterations"]
+
+    def process(self) -> None:
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (self.params["ksize"], self.params["ksize"]))
+        self.result = cv2.dilate(self.image, kernel, iterations=self.params["iterations"])
+
+
+class Opening(OpenCV):
+    required_params = ["ksize", "iterations"]
+
+    def process(self) -> None:
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (self.params["ksize"], self.params["ksize"]))
+        self.result = cv2.morphologyEx(self.image, cv2.MORPH_OPEN, kernel, iterations=self.params["iterations"])
+
+
+class Closing(OpenCV):
+    required_params = ["ksize", "iterations"]
+
+    def process(self) -> None:
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (self.params["ksize"], self.params["ksize"]))
+        self.result = cv2.morphologyEx(self.image, cv2.MORPH_CLOSE, kernel, iterations=self.params["iterations"])
