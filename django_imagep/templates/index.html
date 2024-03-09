@@ -37,10 +37,14 @@
                 justify-content: space-evenly;
             }
         </style>
+        {% load static %}
+        <script src="{% static "assets/api.js" %}"></script>
+        <script src="{% static "assets/event.js" %}"></script>
+        <script src="{% static "assets/generate.js" %}"></script>
+        <script src="{% static "assets/tree.js" %}"></script>
     </head>
 
     <body>
-        {% load static %}
         <form id="upload-image">
             {% csrf_token %}
             <input id="image-input" type="file" name="image_url" />
@@ -59,32 +63,6 @@
         let root = {};
         let counter = 1;
         let current_id = -1;
-
-        let uploadImage = async (event) => {
-            event.preventDefault();
-            const form_data = new FormData(event.target);
-            if (document.getElementById("image-input").files.length == 0) {
-                return;
-            }
-            let response = await fetch("api/image-management/", {
-                method: "POST",
-                body: form_data,
-            });
-            let data = await response.json();
-            /* Append to container */
-            let image_container = document.getElementById("image-container");
-            image_container.innerHTML = "";
-            let image = await generateImage(0, 0, "origin-image", data["image_url"]);
-            image_container.appendChild(image);
-            root = {
-                id: 0,
-                image_url: data["image_url"],
-                function: "",
-                params: {},
-                changed: false,
-                child: [],
-            };
-        };
 
         let addImageChild = async (event) => {
             let name_list = event.target.name.split("-");
@@ -137,7 +115,7 @@
             let node = await findImageChild(root, parent_id);
             node["child"].push(data);
             // Append to container
-            let image = await generateImage(counter, layer, "name", "url");
+            let image = await generateImageBox(counter, layer, "name", "url");
             // if layer not exist, create new layer
             let image_container = document.getElementById("image-container");
             let layer_id = `image-layer-${layer + 1}`;
@@ -151,101 +129,6 @@
             }
             image_layer.appendChild(image);
             counter++;
-        };
-
-        let delImageChildEvent = async (event) => {
-            let name_list = event.target.name.split("-");
-            let parent_id = parseInt(name_list[1]);
-            await delImageChild(root, parent_id);
-        };
-
-        let editImageParams = async (event) => {
-            let name_list = event.target.id.split("-");
-            let id = parseInt(name_list[1]);
-            // generate node data
-            let node = await findImageChild(root, id);
-            let div_params = await generateParams(node)
-            // Append to container
-            let param_container = document.getElementById("param-container");
-            param_container.innerHTML = "";
-            if (current_id == id) {
-                current_id = -1;
-                param_container.style.display = "none";
-                return;
-            } else {
-                current_id = id;
-                param_container.style.display = "initial";
-            }
-            if (node["id"] != 0) {
-                param_container.appendChild(div_params);
-            }
-        };
-
-        let findImageChild = async (node, parent_id) => {
-            if (node["id"] == parent_id) {
-                return node;
-            } else if (node["child"].length == 0) {
-                return null;
-            }
-            for (let child of node["child"]) {
-                if (child["id"] == parent_id) {
-                    return child;
-                }
-                let result = await findImageChild(child, parent_id);
-                if (result) {
-                    return result;
-                }
-            }
-        };
-
-        let delImageChild = async (node, delete_id) => {
-            let delete_index = -1;
-            for (let index in node["child"]) {
-                let child = node["child"][index];
-                // 找到要刪除的節點
-                if (child["id"] == delete_id) {
-                    delete_index = index;
-                    break;
-                }
-            }
-            // 若沒找到要刪除的節點則繼續往下找，直到找到為止
-            if (delete_index == -1) {
-                for (let child of node["child"]) {
-                    await delImageChild(child, delete_id);
-                }
-            } else {
-                // 刪除所有子節點
-                for (let child of node["child"][delete_index]["child"]) {
-                    await delImageChild(node["child"][delete_index], child["id"]);
-                }
-                // 刪除節點及畫面
-                node["child"].splice(delete_index, 1);
-                document.getElementById(`div-${delete_id}`).remove();
-            }
-        };
-
-        let generateImage = async (id, layer, image_name, image_url) => {
-            let div = document.createElement("div");
-            div.id = `div-${id}`;
-            div.className = "image";
-            let img = document.createElement("img");
-            img.id = `image-${id}`;
-            img.alt = image_name;
-            img.src = image_url;
-            img.addEventListener("click", editImageParams);
-            let add_button = document.createElement("button");
-            add_button.name = `abtn-${id}-${layer + 1}`;
-            add_button.innerText = "新增";
-            add_button.addEventListener("click", addImageChild);
-            let delete_button = document.createElement("button");
-            delete_button.name = `dbtn-${id}-${layer + 1}`;
-            delete_button.innerText = "刪除";
-            delete_button.addEventListener("click", delImageChildEvent);
-            div.appendChild(img);
-            div.appendChild(generateFunctionSelector(`function-${id}`));
-            div.appendChild(add_button);
-            div.appendChild(delete_button);
-            return div;
         };
 
         let generateFunctionSelector = (id, value="") => {
@@ -284,30 +167,6 @@
             return select;
         };
 
-        let generateFunctionGroup = (label) => {
-            let group = document.createElement("optgroup");
-            group.label = label
-            return group;
-        };
-
-        let generateFunctionOption = (text, value) => {
-            let option = document.createElement("option");
-            option.text = text;
-            option.value = value;
-            return option;
-        };
-
-        let generateRange = (id, value, min=0, max=255, step=5) => {
-            let input = document.createElement("input");
-            input.id = id;
-            input.type = "range";
-            input.min = min;
-            input.max = max;
-            input.step = step;
-            input.value = value;
-            return input;
-        };
-
         let generateParams = async (params) => {
             let div = document.createElement("div");
             div.id = `div-params-${params["id"]}`;
@@ -343,65 +202,20 @@
                 div.appendChild(generateRange(`ksize-${params["id"]}`, params["params"]["ksize"], 3, 11, 2));
                 div.appendChild(generateRange(`iterations-${params["id"]}`, params["params"]["iterations"], 1, 10, 1));
             }
-            div.addEventListener("change", paramOnChange);
+            div.addEventListener("change", paramChangeEvent);
             return div;
-        };
-
-        let imageProcess = async (event) => {
-            event.preventDefault();
-            let response = await fetch("api/image-process/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(root)
-            });
-            let data = await response.json();
-            root = await syncImageProcessResult(data);
-            console.log(root);
-        };
-
-        let clearImageProcessResult = (event) => {
-            document.getElementById("image-container").innerHTML = "";
-            document.getElementById("param-container").innerHTML = "";
-            document.getElementById("param-container").style.display = "none";
-            document.getElementById("image-process").reset();
-            document.getElementById("upload-image").reset();
-            root = {};
-            counter = 1;
-            current_id = -1;
-        };
-
-        let syncImageProcessResult = async (root) => {
-            let node = JSON.parse(JSON.stringify(root));
-            for (let index in node["child"]) {
-                node["child"][index] = await syncImageProcessResult(node["child"][index]);
-            }
-            // set image url
-            if (node["id"]) {
-                let image = document.getElementById(`image-${node["id"]}`);
-                image.src = node["image_url"] + "?" + new Date().getTime();
-            }
-            return node;
-        };
-
-        let paramOnChange = async (event) => {
-            let name_list = event.target.id.split("-");
-            let parent_id = parseInt(name_list[name_list.length - 1]);
-            let node = await findImageChild(root, parent_id);
-            node["params"][name_list[0]] = parseInt(event.target.value);
         };
 
         document
             .getElementById("upload-image")
-            .addEventListener("submit", uploadImage);
+            .addEventListener("submit", uploadImageEvent);
 
         document
             .getElementById("image-process")
-            .addEventListener("submit", imageProcess);
+            .addEventListener("submit", imageProcessEvent);
 
         document
             .getElementById("clear")
-            .addEventListener("click", clearImageProcessResult);
+            .addEventListener("click", clearImageEvent);
     </script>
 </html>
