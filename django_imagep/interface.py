@@ -3,7 +3,7 @@ import abc
 import numpy as np
 
 
-class ImageProcessing(abc.ABC):
+class IProcessing(abc.ABC):
 
     @abc.abstractmethod
     def loadImage(self, image: np.ndarray) -> None:
@@ -18,6 +18,10 @@ class ImageProcessing(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def checkParams(self) -> bool:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def getResult(self) -> np.ndarray:
         raise NotImplementedError
 
@@ -27,4 +31,16 @@ class ImageProcessing(abc.ABC):
 
     @abc.abstractmethod
     def process(self) -> None:
+        raise NotImplementedError
+
+
+class IProcessingFactory(abc.ABC):
+    @abc.abstractmethod
+    def createProcessing(self) -> IProcessing:
+        raise NotImplementedError
+
+
+class ILibraryFactory(abc.ABC):
+    @abc.abstractmethod
+    def openLibrary(self) -> IProcessingFactory:
         raise NotImplementedError

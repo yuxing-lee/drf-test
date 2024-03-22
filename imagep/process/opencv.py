@@ -1,6 +1,6 @@
 import cv2
 
-from imagep.application import OpenCV
+from imagep.library import OpenCV
 
 
 class BGR2Gray(OpenCV):

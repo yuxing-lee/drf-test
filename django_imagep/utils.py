@@ -1,8 +1,9 @@
-import importlib
-
 from django.conf import settings
 
-lib = importlib.import_module(settings.IMAGE_PROCESS_LIB)
+from django_imagep.interface import IProcessing, IProcessingFactory
+from imagep.factory import LibraryFactory
+
+lib: IProcessingFactory = LibraryFactory().openLibrary(settings.IMAGE_PROCESS_LIB)
 
 
 def imageProcess(image_path, data):
@@ -10,7 +11,7 @@ def imageProcess(image_path, data):
         media_index = image_path.index("media/")
         image_path = image_path[media_index:]
     if data['function'] != "":
-        module = getattr(lib, data['function'])()
+        module: IProcessing = lib.createProcessing(data['function'])
         module.setParams(data['params'])
         module.loadImageFromPath(image_path)
         if not module.checkParams():

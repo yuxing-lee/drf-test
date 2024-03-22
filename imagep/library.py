@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 
-from imagep.abstract import ImageProcessing
+from django_imagep.interface import IProcessing
 
 
-class OpenCV(ImageProcessing):
+class OpenCV(IProcessing):
 
     required_params = []
     optional_params = []

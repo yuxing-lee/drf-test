@@ -167,4 +167,4 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Image process
-IMAGE_PROCESS_LIB = "imagep.process.opencv"
+IMAGE_PROCESS_LIB = "opencv"
