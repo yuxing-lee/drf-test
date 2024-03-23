@@ -26,6 +26,6 @@ def imageProcess(image_path, data):
     return data
 
 
-def upload_to(instance, filename):
+def uploadTo(instance, filename):
     extension_index = filename.rfind('.')
     return f'images/{filename[:extension_index]}/{filename}'

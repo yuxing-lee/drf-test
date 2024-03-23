@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='ImageInfo',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image_url', models.ImageField(blank=True, null=True, upload_to=django_imagep.utils.upload_to)),
+                ('image_url', models.ImageField(blank=True, null=True, upload_to=django_imagep.utils.uploadTo)),
                 ('create_at', models.DateTimeField(auto_now_add=True)),
             ],
         ),
