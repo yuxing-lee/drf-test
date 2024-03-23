@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+.pre-commit-config.yaml
+.git/
+github/
+media/
+__pycache__
+Dockerfile
+db.sqlite3
