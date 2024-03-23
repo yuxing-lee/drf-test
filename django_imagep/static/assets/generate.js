@@ -1,8 +1,20 @@
 let generateImageBox = async (id, layer, image_name, image_url) => {
+    let function_name = "";
+    if (id != 0) {
+        let node = await findImageChild(root, id);
+        function_name = node["function"]
+    }
     let div = document.createElement("div");
     div.id = `div-${id}`;
     div.className = "image";
+    // Add image
     let img = generateImg(id, image_name, image_url);
+    div.appendChild(img);
+    // Add image info
+    let info_div = document.createElement("div");
+    info_div.className = "image-info";
+    let label = document.createElement("label");
+    label.textContent = function_name;
     let add_button = document.createElement("button");
     add_button.name = `abtn-${id}-${layer + 1}`;
     add_button.innerText = "新增";
@@ -11,10 +23,11 @@ let generateImageBox = async (id, layer, image_name, image_url) => {
     delete_button.name = `dbtn-${id}-${layer + 1}`;
     delete_button.innerText = "刪除";
     delete_button.addEventListener("click", delImageChildEvent);
-    div.appendChild(img);
-    div.appendChild(generateFunctionSelector(`function-${id}`));
-    div.appendChild(add_button);
-    div.appendChild(delete_button);
+    info_div.appendChild(label);
+    info_div.appendChild(generateFunctionSelector(`function-${id}`));
+    info_div.appendChild(add_button);
+    info_div.appendChild(delete_button);
+    div.appendChild(info_div);
     return div;
 };
 
