@@ -29,6 +29,17 @@
     - [ ] AWS
     - [ ] GCP
 
+# Environment
+
+1. Python 3.12.1
+
+# Start
+
+```bash
+$ pip install -r requirements.txt
+$ python manage.py runserver
+```
+
 # API Flow
 
 ```mermaid
