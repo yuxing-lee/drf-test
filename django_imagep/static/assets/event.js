@@ -55,6 +55,46 @@ let paramChangeEvent = async (event) => {
     node["params"][name_list[0]] = parseInt(event.target.value);
 };
 
+let addImageChildEvent = async (event) => {
+    let name_list = event.target.name.split("-");
+    let parent_id = parseInt(name_list[1]);
+    let layer = parseInt(name_list[2]);
+    // generate node data
+    let function_name = document.getElementById(`function-${parent_id}`).value
+    if (!function_name) {
+        return;
+    }
+    let params = {};
+    for (const [key, value] of Object.entries(settings[function_name]["default"])) {
+        params[key] = value
+    }
+    let data = {
+        id: counter,
+        image_url: "",
+        function: function_name,
+        params: params,
+        changed: true,
+        child: [],
+    };
+    let node = await findImageChild(root, parent_id);
+    node["child"].push(data);
+    // Append to container
+    let image = await generateImageBox(counter, layer, "name", "url");
+    // if layer not exist, create new layer
+    let image_container = document.getElementById("image-container");
+    let layer_id = `image-layer-${layer + 1}`;
+    let image_layer = document.getElementById(layer_id);
+    if (!image_layer) {
+        let div = document.createElement("div");
+        div.id = layer_id;
+        div.className = "image-layer";
+        image_container.appendChild(div);
+        image_layer = document.getElementById(layer_id);
+    }
+    image_layer.appendChild(image);
+    counter++;
+};
+
 let delImageChildEvent = async (event) => {
     let name_list = event.target.name.split("-");
     let parent_id = parseInt(name_list[1]);
